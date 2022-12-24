@@ -1,0 +1,105 @@
+Xmas Eve: Nocturne Long night with no end
+
+
+-GAMEPLAY-
+
+Levels are linear- each level takes you through a few battle arenas punctuated by platforming sections. 
+
+Movement
+Mvmt Finishers:
+When doing a finisher on an enemy, your character gets a burst of movement in the joystick direction. 
+Finisher from ground >> dash (on ground)
+Finisher from airborne >> big directional jump
+Airborne burst
+Provides the same movement of finishers (minus the finishing);  can do on any enemy (regardless of if they are in the finisher state. Player must be airborne and in range of enemy. Some enemies can Block this.
+Enemies lose x health 
+The “Sacred Spike” is a grappling hook primarily used for traversal
+Sacred spike can only attach to “fate membrane”- (grapplepoints on environment/ all enemies)  
+#TEST# To use sacred spike:
+Option 1 throwing: Hold LT to aim, rt to throw the spike. Santa stays in place 
+- used to break destructible pieces in the environment
+- #also used to pull platforms out from one spot and throw them elsewhere#maybe
+Option 2 traversal:
+When u grapple, grappleable points get an little crosshair over them. The crosshair snaps to any enemies in the grapple path(from sweep test)
+ Must be airborne**- hold rt to zip to a grappling point (ie sekiro grappling hook). You may end the grapple prematurely by releasing rt(ie DOOM meathook).
+2 types of graples: Airborne Gapple and GRound Grapple
+Ledge jump: When grappling, jump right when you make contact with the ledge. This allows you to do an AOE smash or an  airborne burst
+
+			For both
+				Maybe airbornborne grapple functions exactly like skiro grapple, and u canattack out of it?
+If you grapple all the way to the grapple point, and the grapple point is on flat ground(not on a wall)- you do a (regular)jump (Grapple End Jump)
+Timing an attack when you reach the grapple point gives an AOE attack (Grapple smash)
+If you end the grapple prematurely, you are unable to grapple to the same point unless you land or grapple to another point
+
+Airborne Gapple
+GRAPPLE ROPE GAUGE:
+Prevents spamming grapple to stay airborne
+Discrete counts
+Depletes starting from first airborne grapple
+Continues to deplete when you grapple from mid air
+Resets if when you touch the ground or grapple to completion
+		Exiting grapple
+All grapplepoints not on the same level as the player require airborne grapple. (must be airborne)
+Releasing RT mid grapple does a small leapin the char model’s direction
+Taking damage during grapple
+
+
+GRound Grapple
+Releasing Rt mid grapple does a brief slide in the char model’s direction (functionally same as dodge)
+**Note: you do not need to be airborne to grapple to grapple points on the same level as you (ground grapple)
+Combat
+The Sacred Spike is central to combat
+Staggered enemies are GRAPPLE-ABLE (On ground or airborne)
+Three main aspects of fighting:
+Stationary(deflecting/attacking)
+Enemy Positioning/Spacing
+Enemies place themselves around you in a grid
+Dodging while in combat places you in the nearest open adjacent grid space (based on dodge direction)
+Enemies space themselves out from the player either near or far
+Only Three enemies at a time position themselves near the player. There are exceptions (unique enemies, bosses)
+Far enemies shoot at the player, and incentivise grappling/movement
+
+
+Deflecting
+Each enemy has deflect numbers that diminishes as you deflect consecutive attacks
+Enemies at <20% health can be finished
+Deplete an enemies deflect count to bypass the health and let them be finished
+Get over here (Pulling enemies toward you to combo them) #throwing#
+Traversal(Pulling yourself toward enemies) (doom meathook)#traversal#
+#OPTIONA#While grappling, the player becomes a projectile
+Hitting enemies while grappling sends them flying
+They may block this and interrupt your grapple
+-These enemies become airborne and grapple-able
+			- #OPTIONB#Grapple attacks (alternative to projectile)
+				- attack mid grapple to do a grapple attack
+				- sends enemies flying
+Some grapple points will be in the same level as the player throughout arenas, to be used for evasion/ attacking.
+Grappling to an airborne enemy works exactly as grappling to a grapple point.
+Complete the grapple to get on top of  the enemy.Jumping will spike the enemy down in the reverse direction
+Perform an airborne burst on a grappled enemy to spike them down
+Enemy loses HP and becomes a projectile that can damage others
+If enemy’s hp <0, they will not die until they land - maybe they explode?
+
+Finisher events:
+Stationary finishers, MVT finishers, Grapple finishers
+Bicep Break:
+Activates when you parry an enemy’s perilous blow while idle
+Santa catches the enemy’s blade in his bicep and flexes, shattering the blade.
+
+
+
+
+ENEMY STATES
+charging
+Active 
+Tracking, attacking, idle, wandering
+
+Staggered
+Projectile
+
+
+
+
+
+
+

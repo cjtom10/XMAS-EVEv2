@@ -1,0 +1,10 @@
+0----sounds needed
+
+Grapple 1 (whoosh for arm thrown back)
+Grapple 2 ( whoosh for actual throw)
+Grappling ground ( whoosh + scraping ground)
+Grtappling air (whoosh)
+end grapple - whoosh + ching!
+end airborne grapple/enter perched - subtle Ding!
+
+
