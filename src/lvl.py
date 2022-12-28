@@ -123,8 +123,8 @@ class Level:#makd this a separate object
 
                 self.emptyPos(self.arenaGP)
                 self.findGP(5,self.arenaGP)
-                print('grapppoints',self.grapplePoints[2].name)
-                # self.spawnNo = 0
+           
+                self.spawnNo = 0
 
                 # rock = loader.loadModel('../models/rock1.glb')
                 # rock.reparentTo(NP)

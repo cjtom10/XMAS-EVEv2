@@ -220,20 +220,9 @@ class Anims:
         #     print(self.anim, 'to idle')
         if self.anim in self.priorityanims:
             return #task.cont
-        # if self.animseq!=None:
-        #     return
-        # if self.isWalking ==False:
-        #     self.charM.disableBlend()
-        #     self.charM.setControlEffect('walk', 0)
-        #     self.charM.setControlEffect('walking',0)
-        # print('current anim',self.anim, "currentframe", self.frame )
-        # print(self.head.getPos(render), self.headHB.getPos(render))
-        # self.headHB.setPos(self.character.movementParent, self.head.getPos())
-        # self.pin.reparentTo(self.head)
-        # self.pin.setPos(self.head.getPos(render))
-        # print('deflect frames',self.deflectFrames) ### use deflect frames to blend deflect anim
-        
-        # print('anim',self.anim, 'frame', self.frame)
+        # if self.isPerched == True:
+        #     print('anim perche')
+        #     self.animPerch()
         
         if self.character.smashonground == True:
             self.endsmash()#lol
@@ -252,23 +241,7 @@ class Anims:
             else:
                 self.animBlendAtk()
             return
-                
-        # if self.character.movementState == "endaction":
-        #     print('blend out')
-        # if self.character.movementState == 'attacking' and self.character.isAttacking ==False and self.itimer ==True:
-        #     if self.leftjoystick ==True:
-        #         pass
-                # print('attack walk')
-                # self.finish()
-                # self.animattackwalk()
-                # self.animWalk()
-                # self.atkwalk = True
-           ##do kicks, but if attacking is false, allow them to wa
-            
-        # #     self.animattack()
-        # if self.character.movementState == 'attacking':
-        #     self.current_seq = self.atkseq
-        # print(self.character.isLanding)
+
                
         if self.character.movementState == 'finisher':
             # self.animGrind()
@@ -307,6 +280,7 @@ class Anims:
             # if self.character.isdodging == False and self.anim == 'dodge':
             #     self.charM.stop()
         ###LOOP IDLE 
+            
             if self.isIdle ==True:# and self.anim !='parry' and self.anim not in self.priorityanims:
                 self.groundstates = 'idle'
                 self.animIdle()
@@ -481,60 +455,6 @@ class Anims:
             
             self.blendoutAtk = None
             # self.enterWalk = False
-    #     # self.charM.pose
-    # def land2Walk(self):
-    #     print('land2walk')
-        
-    # def Idle2Walk(self):
-  
-    #     # # print('Idle2walk')
-    #     self.current_animations = [self.Walk, self.Idle]
-    #     self.startCurSeq(self.Idle, self.Walk, self.ease_in_walk, self.ease_out_idle,'idle2walk')
-    #     self.ease_out_idle.duration = .2
-    #     self.ease_in_walk.duration = .2
-    #     # self.endCurSeq()
-    # def Walk2Idle(self):
-    #     print('walk2Idle')
-    #     self.current_animations = [self.Idle, self.Walk]
-    #     self.startCurSeq(self.Walk, self.Idle, self.ease_in_idle, self.ease_out_walk,'walk2idle')
-    #     self.ease_out_walk.duration = .2
-    #     self.ease_in_idle.duration = .2
-    #     # self.endCurSeq
-    # def Idle2Dodge(self):
-    #     print('idle2dodge')
-    #     self.current_animations = [self.Idle, self.Dodge]
-    #     self.startCurSeq(self.Idle, self.Dodge, self.ease_in_dodge, self.ease_out_idle,'idle2dodge')
-    #     self.ease_out_idle.duration = .2
-    #     self.ease_in_dodge.duration = .2
-    # def Walk2Dodge(self):
-    #     print('walk2dodge')
-    #     return
-    #     # self.current_animations = [self.Idle, self.Dodge]
-    #     # self.startCurSeq(self.Idle, self.Dodge, self.ease_in_dodge, self.ease_out_idle,'walk2dodge')
-    #     # self.ease_out_idle.duration = .2
-    #     # self.ease_in_dodge.duration = .2
-    # def Land2Dodge(self):
-    #     print('land2dodge)')
-    # def Dodge2Walk(self):
-    #     print('dodge2walk')
-    #     self.current_animations = [self.Dodge, self.Walk]
-    #     self.startCurSeq(self.Dodge, self.Walk, self.ease_in_walk, self.ease_out_dodge,'dodge2walk')
-    #     self.ease_out_dodge.duration = .2
-    #     self.ease_in_walk.duration = .2
-    # def Dodge2Idle(self):
-    #     print('dodge2idle')
-    # def ExitDodge(self):
-    #     print('exti dodge')
-    #     self.current_animations = [self.Dodge, self.Walk]
-    #     self.startCurSeq(self.Dodge, self.Walk, self.ease_in_walk, self.ease_out_dodge,'exitdodge')
-    #     self.ease_out_dodge.duration = .2
-    #     self.ease_in_walk.duration = .2
-
-    # def Jump2Fall(self):
-    #     # self.current_animations = [self.Dodge, self.Walk]
-    #     self.startCurSeq(self.Jump, self.Fall, self.ease_in_fall, self.ease_out_jump, 'jump2fall')
-    #     self.ease_out_jump.duration = .2
-    #     self.ease_in_fall.duration = .2
 
 ####anim loops
     def animIdle(self):
@@ -551,7 +471,11 @@ class Anims:
         # self.current_seq = Sequence(idle, name='idle')
         # self.current_seq.start()
         # print(idle.getCurrentFrame())
-
+    def animPerch(self):
+        print(';perch')
+        self.charM.setPlayRate(1, 'perched')
+        if (self.anim!="perched"):
+            self.charM.play('perched')  
  
     def animWalk(self):
         

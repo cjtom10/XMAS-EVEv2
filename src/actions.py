@@ -54,6 +54,7 @@ class Actions:
 
             ####Player col nodes
             self.atkNode = NodePath(CollisionNode('attack'))
+            self.GatkNode = NodePath(CollisionNode('grappleAttack'))
             self.parryNode = NodePath(CollisionNode('parry'))
             
             self.grappleSeq = None
@@ -62,118 +63,10 @@ class Actions:
             self.isPerched = False
             self.perchtime = 0
             self.jumpdis = 1
+            self.lastGrapple=None
             ######Enemy collnodes
             
 
-            # self.rightfootHB = self.worldNP.attachNewNode(BulletGhostNode('rightfoot'))
-            # self.lockOnimg=OnscreenImage()
-            # self.lockOnimg.setTransparency(True)
-            # self.lockl
-            # self.lockOnimg.setImage('../models/tex/lockon.png')
-            # self.lockOnimg.setPos((0,0,0))
-            # #collisions
-            # self.traverser = CollisionTraverser('traverser')
-            # base.cTrav = self.traverser
-            # collhandler = CollisionHandlerEvent()
-            # collhandler.addInPattern('%fn-into-%in')
-            # collhandler.addOutPattern('%fn-out-%in')
-            # self.traverser.addCollider(self.footHB, collhandler)
-            # self.traverser.addCollider(self.dummyHB, collhandler)
-            # self.accept('rightfoot-into-dummyhb',  self.hit)# extraArgs=[self.playercar])
-            # self.accept('rightfoot-into-dummyhb',  self.hit)
-        # def charhitbox(self, actor, HBlist,visible,name):
-        #     """set up hitbox for taking damage"""
-        #     # print(self.charM.listJoints())
-        #     self.head = actor.expose_joint(None, 'modelRoot', 'head')
-        #     self.chest = actor.expose_joint(None, 'modelRoot', 'chest')
-        #     rightbicep= actor.expose_joint(None, 'modelRoot', 'bicep.R')
-        #     rightforearm= actor.expose_joint(None, 'modelRoot', 'forarm.R')
-        #     rightthigh = actor.expose_joint(None, 'modelRoot', 'femur.R')
-        #     rightshin = actor.expose_joint(None, 'modelRoot', 'shin.R')
-        #     leftbicep= actor.expose_joint(None, 'modelRoot', 'bicep.L')
-        #     leftforearm= actor.expose_joint(None, 'modelRoot', 'forarm.L')
-        #     leftthigh = actor.expose_joint(None, 'modelRoot', 'femur.L')
-        #     leftshin = actor.expose_joint(None, 'modelRoot', 'shin.L')
-
-        #     # print(self.head.getPos(render))
-        #     headHB = CollisionSphere(0,0,0, .1)
-        #     chestHB= CollisionSphere(0,.2,0,.4)
-        #     arm =  CollisionCapsule((0,-.2,0),(0,.8,0),0.07)
-        #     leg =  CollisionCapsule((0,-.38,0),(0,1,0),0.1)
-        #     # forearm =  CollisionCapsule((0,-.2,0),(0,.8,0),0.07)
-        #     self.characterHitB = self.character.movementParent.attachNewNode(CollisionNode('character'))
-
-        #     # self.characterHB = []
-
-        #     # self.headHB = self.characterHitB.attachNewNode(CollisionNode('head'))
-        #     # self.headHB.reparentTo(self.characterHitB)
-        #     # self.headHB.node().addSolid(headHB)       
-        #     # self.headHB.show()
-        #     # self.characterHB.append(self.headHB)
-        #     # self.headHB.setCompass(self.head)
-        #     # self.headHB.setPos(self.head, 0,0,7)
-        #     # self.characterHitB.show()
-
-        #     self.headHB = self.head.attachNewNode(CollisionNode(f'{name}head'))
-        #     self.headHB.node().addSolid(headHB)
-        #     self.headHB.setZ(-.2)
-        #     # self.headHB.show()
-        #     HBlist.append(self.headHB)
-        #     # self.headHB.wrtReparentTo(self.characterHitB)
-
-            
-
-        #     self.chestHB = self.chest.attachNewNode(CollisionNode(f'{name}chest'))
-        #     self.chestHB.node().addSolid(chestHB)
-        #     self.chestHB.setY(-.2)
-        #     # self.chestHB.show()
-        #     HBlist.append(self.chestHB)
-        #     # self.chestHB.reparentTo(self.characterHB)
-
-        #     self.bicepR = rightbicep.attachNewNode(CollisionNode(f'{name}bicepr'))
-        #     self.bicepR.node().addSolid(arm)
-        #     # self.bicepR.show()
-        #     HBlist.append(self.bicepR)
-
-        #     self.forarmR = rightforearm.attachNewNode(CollisionNode(f'{name}forearmr'))
-        #     self.forarmR.node().addSolid(arm)
-        #     # self.forarmR.show()
-        #     HBlist.append(self.forarmR)
-
-        #     self.thighR = rightthigh.attachNewNode(CollisionNode(f'{name}thighr'))
-        #     self.thighR.node().addSolid(leg)
-        #     # self.thighR.show()
-        #     HBlist.append(self.thighR)
-            
-        #     self.shinR = rightshin.attachNewNode(CollisionNode(f'{name}shinr'))
-        #     self.shinR.node().addSolid(leg)
-        #     # self.shinR.show()
-        #     HBlist.append(self.shinR)
-
-        #     self.bicepL = leftbicep.attachNewNode(CollisionNode(f'{name}bicepl'))
-        #     self.bicepL.node().addSolid(arm)
-        #     # self.bicepL.show()
-        #     HBlist.append(self.bicepL)
-
-        #     self.forarmL = leftforearm.attachNewNode(CollisionNode(f'{name}forearml'))
-        #     self.forarmL.node().addSolid(arm)
-        #     # self.forarmL.show()
-        #     HBlist.append(self.forarmL)
-
-        #     self.thighL = leftthigh.attachNewNode(CollisionNode(f'{name}thighl'))
-        #     self.thighL.node().addSolid(leg)
-        #     # self.thighL.show()
-        #     HBlist.append(self.thighL)
-            
-        #     self.shinL = leftshin.attachNewNode(CollisionNode(f'{name}shinl'))
-        #     self.shinL.node().addSolid(leg)
-        #     # self.shinL.show()
-        #     HBlist.append(self.shinL)
-
-        #     if visible ==True:
-        #         for node in HBlist:
-        #             node.show()
-        #     # print('char hb', self.characterHB)
 
         def hb(self, parent, node, shape, pos =(0,0,0), visible=True):
             """player hitboxes for attacks/parries"""
@@ -410,15 +303,15 @@ class Actions:
 
 
 
-        def doJump(self, dis = 1 ,GJump = False):
+        def doJump(self, dis = 2 ,height = 3):
             if self.blending == True:
                 self.endBlend()
-            if GJump == True:
-                print('grapple jump')
-                self.character.jumpdir = self.charM.getQuat().getForward() * self.jumpdis
-                self.character.startJump(3)
+            # if GJump == True:
+            #     # print('grapple jump')
+            #     self.character.jumpdir = self.charM.getQuat().getForward() * self.jumpdis
+            #     self.character.startJump(3)
 
-                return
+            #     return
             # print('jumpdir', self.character.jumpdir)
             if self.gamepad:
                 # if self.character.movementState == 'ground':
@@ -435,7 +328,13 @@ class Actions:
             #input
             # self.action("face_a", (0,0,0))
             # print(self.character.jumpdir)
-                
+            # if GJump == True:
+            #     # print('grapple jump')
+            #     # self.character.jumpdir = self.charM.getQuat().getForward() * self.jumpdis
+            #     # self.character.jumpdir*=self.jumpdis
+            #     self.character.startJump(3)
+
+            #     return   
 
             if self.character.isAttacking==True:
                 print('cant jump brto attacking')
@@ -466,7 +365,7 @@ class Actions:
 
             if self.lockedOn ==False:
                 self.charM.setH(self.angle)
-            self.character.startJump(3)
+            self.character.startJump(height)
         def vaultUp(self):
             # self.speed = 0
             if self.character.movementState == 'vaulting':
@@ -781,7 +680,8 @@ class Actions:
         #     #if you dont have super armor,  end attack and staggert    # print('dodge')
         def takeHit(self):
             """event when player takes damage and doesnt have super armor"""
-            print('takehit')
+            if self.isGrapplingAir==True or self.isGrapplingGround==True:
+                self.endGrapple()
             if self.animseq!=None:
                 self.finish()
             s1 = self.charM.actorInterval('takehit',loop = 0)
@@ -801,6 +701,10 @@ class Actions:
         def doGrapple(self, point,ground=False):
             """ground grapple works same as dodge- pushes controler forward, air grapple interpolates the position opf the capsule"""
             # print('mid grapple pos', self.character.movementParent.getPos(render))
+            self.lastGrapple = None
+
+            self.hb(self.charM, self.GatkNode, CollisionCapsule(0,0,0,0,0,3,1.2), visible = True)
+            
             a = self.charM.getX(render) - point.getX(render)
             b = self.charM.getY(render) - point.getY(render)
 
@@ -813,6 +717,7 @@ class Actions:
                 self.isPerched = True
                 self.charM.setP(0)
                 self.charM.setR(0)   
+                self.charM.play('perched')  
             def lookat():
                 self.charM.lookAt(self.currentGrapple)
             if ground == True:
@@ -840,9 +745,9 @@ class Actions:
             # print('grapples')
             
             la = Func(lookat)
-            anim1 = self.charM.actorInterval('grappleAir',loop = 0, startFrame=0, endFrame = 26)
+            anim1 = self.charM.actorInterval('grappleAir',loop = 0, startFrame=0, endFrame = 12)
             # anim2 = self.charM.actorInterval('grappleAir',loop = 0, startFrame=16, endFrame = 26)
-            grappling = self.charM.actorInterval('grappleAir',loop = 1, startFrame=26, endFrame = 40)           
+            grappling = self.charM.actorInterval('grappleAir',loop = 1, startFrame=12, endFrame = 40)           
           
             #TODO ditch the sequence so we can make ease in 
             nod = LerpPosInterval(self.character.movementParent, t, point.getPos(render))
@@ -857,7 +762,7 @@ class Actions:
             # self.character.movementState = 'grappling'
             self.isGrappling = True
             d2p = (self.character.movementParent.getPos(render) - point.getPos(render)).length()
-            print('grappling ground', d2p)
+            # print('grappling ground', d2p)
             if d2p<6:
                 self.endGrapple()
             # print('processing grapple, grapple vec = ', self.character.grappleVec)
@@ -886,6 +791,8 @@ class Actions:
         def endGrapple(self, jump = False):
             """finishes grapple, do a little jump"""
             # print('end grapple pos', self.character.movementParent.getPos(render))
+            self.GatkNode.node().clearSolids()
+
             self.character.grappleGround = False
             self.ganimstarted = False
             p = self.character.movementParent.getPos(render)
@@ -903,16 +810,17 @@ class Actions:
             self.charM.setR(0)   
             self.finish()
 
-            self.isPerched = False
-            self.perchtime = 0
+            if self.isPerched == True:
+                self.character.ground2fall(8)
+                self.isPerched = False
+                self.perchtime = 0
             self.jumpdis = 20
-            # if self.character.isAttacking == False:
-            ##you dont always do this jump! like if u attack out of it u just stop
-            #if its a ground grapple. do  dodge if its air, do jump
-             # this is the jump that haPPENS MIOD GRAPPLE
+
+            #last grapple invalidates grapplepoint until u grapple again or hit the ground?
+            self.lastGrapple = self.currentGrapple
             self.currentGrapple = None
             if jump == True:
-                self.doJump(dis = self.jumpdis, GJump=True)
+                self.doJump(dis = 3, height=4)
             elif jump ==False:
                 # self.evade()
                 return

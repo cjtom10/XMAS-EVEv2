@@ -154,6 +154,7 @@ class PandaBulletCharacterController(object):
         self.grappleVec = Vec3
         self.grappleGround = False
         self.preGrapple = True
+        self.grappleEnemyContact = False
 
         # self.health = .99
         self.char = Actor('../models/player/char.bam',{
@@ -623,7 +624,7 @@ class PandaBulletCharacterController(object):
         self.__currentPos = self.movementParent.getPos()
     def processGrapple(self):
         self.__currentPos = self.movementParent.getPos()
-        if self.preGrapple == True:
+        if self.preGrapple == True or self.grappleEnemyContact==True:
             self.setLinearMovement(0) 
             return
         if self.grappleGround==True:

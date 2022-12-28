@@ -49,35 +49,324 @@ class Events:
 
             ###for consecuitive deflects
             self.deflectOrder =0
-            
-    # def lightAttack(self):
-    #     # ml.disable()
-    #     taskMgr.add(self.character.attacking)
+            traverser = CollisionTraverser('collider')
+            base.cTrav = traverser
 
-            # ####Player col nodes
-            # self.atkNode = NodePath(CollisionNode('attack'))
-            # self.parryNode = NodePath(CollisionNode('parry'))
+            # base.cTrav = CollisionTraverser()
+            # self.accept('control', self.turret1.fire)
+
+
+            # Initialize the handler.
+            self.collqueue = CollisionHandlerQueue()
+            self.collHandEvent = CollisionHandlerEvent()
+            self.collHandEvent.addInPattern('%fn-into-%in')
+
+            self.collHandEvent.addOutPattern('%fn-out-%(tag)ih')
+####    ##player
+            traverser.addCollider(self.player.atkNode, self.collHandEvent)
+            traverser.addCollider(self.player.GatkNode, self.collHandEvent)
+            traverser.addCollider(self.player.parryNode, self.collHandEvent)
+            # traverser.addCollider(self.player.parryNode, self.collqueue)
+
+
+
+            traverser.traverse(render)
+
+
+####    ###enemies aTK HITBOXES
+            # if self.enemies:
+            for enemies in self.enemies:
+                traverser.addCollider(enemies.atkNode, self.collHandEvent)
+
+            for turret in self.turrets:
+                traverser.addCollider(turret.HB, self.collHandEvent)
+                traverser.addCollider(turret.atkNodeL, self.collHandEvent)
+                traverser.addCollider(turret.atkNodeR, self.collHandEvent)
+
+
+                for bullet in turret.bullets:
+                    traverser.addCollider(bullet.cNP, self.collqueue)
+                    traverser.addCollider(bullet.cNP, self.collHandEvent)
+
+                    # self.accept(f'{hb.name}-into-arena', self.bullethitwall)
+                    # traverser.addCollider(hb, queue)
+                # for key, value in turret.bullets.items():
+                #     traverser.addCollider(key.cNP, self.collHandEvent)
+            # list(self.bullets.keys())[2]
+
+#Eve    nts for ur guy taking hits
+            # if self.playerTakingHit ==False:
+            # if self.enemies:
+
+            # for geom in lvl.arenaGeoms:
+
+            # self.accept(f'parry-into-geom{n}', self.bullethitwall)
+
+
+####    3##Player takes hits
+            for bodypart in self.player.HB: 
+                for enemy in self.enemies:
+                    self.accept(f'{enemy.NP.name}attack-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name, enemy, 0.1]) #FIX should oinly takle one hit at a time
+                    self.accept(f'{enemy.NP.name}attack-into-pdodgecheck', self.pdodge,  extraArgs=[True])
+                    self.accept(f'{enemy.NP.name}attack-out-pdodgecheck', self.pdodge,  extraArgs=[False])
+                    for bullet in turret.bullets:
+                        self.accept(f'{bullet.cNP.name}-into-{bodypart.name}', self.getShot, extraArgs=[bodypart.name, bullet, 0.1])
+
+                for turret in self.turrets:
+                    self.accept(f'{turret.NP.name}attackL-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name,turret, .15])
+                    self.accept(f'{turret.NP.name}attackR-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name,turret,.15])
+
+                    # self.accept(f'{turret.NP.name}attackL-into-parry', self.parryTurret, extraArgs=[turret, "R"])
+                    # self.accept(f'{turret.NP.name}attackR-into-parry', self.parryTurret, extraArgs=[turret, "L"])
+####    ####enemy takesa hits
+            for enemy in self.enemies:
+                # if enemy.isHit==True:
+                #         continue# disables multiple hits on single animation
+                # else:    
+                self.accept(f'{enemy.NP.name}attack-into-parry', self.deflectcontact, extraArgs=[enemy])
+                for bodypart in enemy.Hitbox: 
+                    # if self.player.isGrapplingGround==True:
+                    #     pass
+                    # if self.player.isGrapplingAir==True:
+                    #     pass
+                    # else:
+                        self.accept(f'attack-into-{bodypart.name}', self.hitEnemy, extraArgs=[enemy, bodypart.name])
+                        self.accept(f'grappleAttack-into-{bodypart.name}', self.grappleStrike, extraArgs=[enemy, bodypart.name]) #FIX should oinly takle one hit at a time
+                    # self.accept(f'parry-into-{enemy.NP.name}attack', self.deflectcontact, extraArgs=[enemy])
+
+            for turret in self.turrets:
+                self.accept(f'attack-into-{turret.name}hb', self.hitTurret, extraArgs=[turret])
+                self.accept(f'parry-into-{turret.NP.name}attackL', self.parryTurret, extraArgs=[turret, "R"])
+                self.accept(f'parry-into-{turret.NP.name}attackL', self.parryTurret, extraArgs=[turret, "L"])
+                for bullet in turret.bullets:
+                    # print('bullet hb name!', bullet.cNP.name)
+                    for n in range(self.lvl.geomcount):
+                        self.accept(f'{bullet.cNP.name}-into-geom{n}', self.bullethitwall,extraArgs=[bullet])
+                # # for n in 
+                #     f'bullet{n}HB'
+                #     for x in lvl.arenaGeoms:
+                #         self.accept(f'attack-into-{turret.name}hb', self.hitTurret, extraArgs=[turret])
+                    # child.ls()
+
+
+
+            ##character speed
+            # self.speed = Vec3(0, 0, 0)
+            # _____HANDLER_____
+ # s    hrink = LerpScaleInterval(self.worldNP, 3, .3)
+####    #Collision events   
+# =       
+        def hitEnemy(self,enemy,part,entry):#actor
+            if enemy.isHit==True:
+                print(enemy.NP.name,'is already hit')
+                return
+            print(f'{enemy.NP.name} gets hit at ', part)
+            # print(entry)
+            # self.attached = False
+            # self.hitcontact = True
+            # self.atkNode.node().clearSolids()
+            enemy.isHit = True
+            self.hitsfx.play()
+            enemy.health-=.25
+
+            # for node in enemy.Hitbox:
+            #     node.node().clearSolids()
+                # print('clear', node)
+            # enemy.solidsCleared = True    
+
+            def twitch(p):
+                #TODO add an anim instead of this
+                torso=enemy.model.controlJoint(None, "modelRoot", "torso")
+                torso.setP(p)
+            def end():
+                self.hitcontact=False
+                # enemy.isHit =False
+           #stop = Func(enemy.model.stop())#enemy anim stop
+            a = Func(twitch, 30)
+            b = Func(twitch, 0)
+            p = Func(self.player.animseq.pause)#### player hitstopping
+            r = Func(self.player.animseq.resume)
+            e =Func(end)
+
+            hitseq = Sequence(a, p, Wait(.1),b, r,e).start()
+            if enemy.health<=0:
+                self.enemydeath(enemy)
+                self.player.gainPlotArmor(.2)
+            # shrink.start()
+        def grappleStrike(self, enemy, part, entry):
+            """pause grapple for like .2s then launch enemy"""
+            if enemy.isHit==True:
+                print(enemy.NP.name,'is already hit')
+                return
+            point = self.player.enemyLaunchTarget.getPos(render)
+            eFallDir = render.getRelativeVector( self.charM, Vec3(0,10,0))
+            enemy.pausePos = point
+            
+            def pause():
+                if self.player.isGrapplingGround == True:
+                    self.player.character.grappleEnemyContact = True
+                if self.player.isGrapplingAir == True:
+                    self.player.grappleSeq.pause()
+            def resume():
+                if self.player.isGrapplingGround == True:
+                    self.player.character.grappleEnemyContact = False
+                if self.player.isGrapplingAir == True:
+                    self.player.grappleSeq.resume()
+            def fallspeed():
+                enemy.speed = eFallDir
+                enemy.grappleStruck =True
+            def ePause(x):
+                enemy.isPaused = x
+
+            hit = Func(pause)
+            cont = Func(resume)
+            pauseEnemy = Func(ePause, True)
+           
+            resumeEnemy=Func(ePause,False)
+            fall = Func(fallspeed)
+            enemy.isHit = True
+            
+            launch = LerpPosInterval(enemy.NP, .5, point)
+            
+            s = Sequence(hit,Wait(.1),Parallel(launch,cont),pauseEnemy,Wait(.5), resumeEnemy, fall).start()
+            # enemy.controller.setMaxJumpHeight(10)
+            # enemy.controller.setJumpSpeed(10)
+            # enemy.controller.doJump()
+
+            print('grapple strake', enemy,'at', part)
             
 
-            ######Enemy collnodes
-            
 
-            # self.rightfootHB = self.worldNP.attachNewNode(BulletGhostNode('rightfoot'))
-            # self.lockOnimg=OnscreenImage()
-            # self.lockOnimg.setTransparency(True)
-            # self.lockl
-            # self.lockOnimg.setImage('../models/tex/lockon.png')
-            # self.lockOnimg.setPos((0,0,0))
-            # #collisions
-            # self.traverser = CollisionTraverser('traverser')
-            # base.cTrav = self.traverser
-            # collhandler = CollisionHandlerEvent()
-            # collhandler.addInPattern('%fn-into-%in')
-            # collhandler.addOutPattern('%fn-out-%in')
-            # self.traverser.addCollider(self.footHB, collhandler)
-            # self.traverser.addCollider(self.dummyHB, collhandler)
-            # self.accept('rightfoot-into-dummyhb',  self.hit)# extraArgs=[self.playercar])
-            # self.accept('rightfoot-into-dummyhb',  self.hit)
+        def parryTurret(self, turret, side, entry):
+            print(f'successfuluy parried {turret.name}. it is stagger now')
+            turret.staggered(side)
+        def hitTurret(self, turret, entry):
+            # print('hit',turret.name)
+            # turret.health -= .25
+            # if turret.health<=0:
+            #     # self.enemydeath(turret)
+            #     turret.dieSeq()
+            self.hitsfx.play()
+
+            if turret.isHit==True:
+                print(turret.NP.name,'is already hit')
+                return
+            print(f'{turret.NP.name} gets hit')
+            # print(entry)
+            # self.attached = False
+            # self.hitcontact = True
+            # self.atkNode.node().clearSolids()
+            turret.isHit = True
+            self.hitsfx.play()
+            turret.health-=.25
+
+            # for node in enemy.Hitbox:
+            #     node.node().clearSolids()
+                # print('clear', node)
+            # enemy.solidsCleared = True    
+
+            def twitch(p):
+                #TODO add an anim instead of this
+                # torso=enemy.model.controlJoint(None, "modelRoot", "torso")
+                turret.model.setP(p)
+            def end():
+                self.hitcontact=False
+                turret.isHit = False
+           #stop = Func(enemy.model.stop())#enemy anim stop
+            a = Func(twitch, 30)
+            b = Func(twitch, 0)
+            p = Func(self.player.animseq.pause)#### player hitstopping
+            r = Func(self.player.animseq.resume)
+            e =Func(end)
+
+            hitseq = Sequence(a, p, Wait(.1),b, r,e).start()
+            if turret.health<=0 and not turret.isDying:
+                turret.dieSeq()
+                self.player.gainPlotArmor(.1)
+
+        def bullethitwall(self,bullet, entry):
+            # print(bullet.name, 'hits wall')
+            # bullet.cNP.node().clearSolids()
+            # bullet.HBattached = False
+            bullet.hit()
+            # turret_name = str(entry).split('/')[2]
+            # turret = [t for t in self.turrets if t.name == turret_name][0]
+            # turret.reset_bullet(entry)
+
+            # print("i found turret", turret.name)
+
+
+        def getShot(self,name,bullet,  amt, entry):
+            # if self.player.isStunned
+            bullet.hit()
+            # self.player.iframes()
+
+            def twitch(p):           
+                torso=self.player.charM.controlJoint(None, "modelRoot", "torso")
+                torso.setP(p)
+            def end():
+                # torso.removeNode()
+                self.player.charM.releaseJoint("modelRoot", "torso")
+            #     self.hitcontact=False
+           #stop = Func(enemy.model.stop())#enemy anim stop
+            a = Func(twitch, 30)
+            b = Func(twitch, 0)
+            # p = Func(self.player.animseq.pause)#### player hitstopping
+            # r = Func(self.player.animseq.resume)
+            e =Func(end)
+
+            hitseq = Sequence(a,  Wait(.1),b,e).start()
+            print('plaayrr gets shot. Oh no!', name)
+
+        def takeHit(self, name, enemy,amt, entry):
+            """amt is the amount opf damage, varies from enemy + attack"""
+            if enemy!=None:
+                if enemy.hasHit ==True:
+                    print('im alrteady hit gd')
+                    return
+                self.player.takeHit()
+                # enemy.atkNode.node().clearSolids()
+                enemy.hasHit=True 
+                print(  enemy.name, 'hits players', name)
+            # self.player.takeHit()
+            netDmg = amt - self.player.plotArmour
+
+            if self.player.plotArmour > 0:
+                self.player.plotArmour -= amt
+                if amt> self.player.plotArmour:
+                    self.player.health -= netDmg
+            else:
+                self.player.health -= amt        
+            print(f'player take {amt} damage', 'hp-', netDmg)
+
+            # print(entry)
+            # self.dummy2.atkNode.node().clearSolids()
+
+            # if self.player.health<=0:
+            #     self.doExit()
+            #add hitstopping,for enemy, sfx, etc
+            ####Nered to add poise check then see whether or not character gets stunned
+
+
+        def deflectcontact(self,enemy, entry):
+            print(f'player defelects {enemy.name}', 'enemyposture:',enemy.posture)
+            if enemy.hasHit ==True:
+                    print('im alrteady hit parrued')
+                    return
+            enemy.hasHit = True
+            #pause anims opn enemy/p[layer, play recoil anims]
+            #deplete posture from enemy, if posture -== 0 enemy enters stun
+            self.player.parryNode.node().clearSolids()
+            enemy.atkNode.node().clearSolids()
+            # self.player.iframes
+            self.deflectsfx.play()
+
+            self.deflected('recoil1',enemy)
+
+        def pdodge(self,x, entry):
+            self.character.perfectDodge = x
+            print('pdodge',self.character.perfectDodge)    
+
         def charhitbox(self, actor, HBlist,visible,name):
             """set up hitbox for taking damage"""
             # print(self.charM.listJoints())

@@ -25,7 +25,7 @@ loadPrcFileData("", "sync-video t")
 import sys
 import time
 import direct.directbase.DirectStart
-loadingText=OnscreenText("Loading...",1,fg=(0.03,0.6,0.4,1),pos=(0,0),align=TextNode.ACenter,scale=0.5,mayChange=1)
+loadingText=OnscreenText("Loading...",1,fg=(0.03,0.6,0.4,1),pos=(0,0),align=TextNode.ACenter,scale=0.25,mayChange=1)
 base.graphicsEngine.renderFrame() #render a frame otherwise the screen will remain black
 base.graphicsEngine.renderFrame() #idem dito
 base.graphicsEngine.renderFrame() #you need to do this because you didn't yet call run()
@@ -114,13 +114,14 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
 
         self.setup()
         # Anims.__init__(self)
-        Events.__init__(self)
+        
         Fx.__init__(self)
         self.lvl = Level(self.worldNP, self.world)
         self.enemySetup()
         # add_device_listener(
         # assigner=SinglePlayerAssigner(),
         # )
+        Events.__init__(self)
         render.clearLight()
         
         self.startpos = (0,-20,0,)
@@ -227,7 +228,7 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
         taskMgr.add(self.update, 'updateWorld')
         # taskMgr.add(self.updateAnim, 'animtask')
         taskMgr.add(self.debugOSDUpdater, "update OSD")
-        # taskMgr.doMethodLater(2, self.spawnEnemy, 'spawn enemies')
+        taskMgr.doMethodLater(2, self.spawnEnemy, 'spawn enemies')
 
         # self.isIdle=False
         # self.isWalking = False
@@ -242,273 +243,283 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
         self.lockonPos = NodePath('lockon pos')
         # self.camtarg.reparentTo(self.worldNP)
 
-        self.grindseq = None
+        # self.grindseq = None
  
-        traverser = CollisionTraverser('collider')
-        base.cTrav = traverser
+#         traverser = CollisionTraverser('collider')
+#         base.cTrav = traverser
 
-        # base.cTrav = CollisionTraverser()
-        # self.accept('control', self.turret1.fire)
+#         # base.cTrav = CollisionTraverser()
+#         # self.accept('control', self.turret1.fire)
         
 
-        # Initialize the handler.
-        self.collqueue = CollisionHandlerQueue()
-        self.collHandEvent = CollisionHandlerEvent()
-        self.collHandEvent.addInPattern('%fn-into-%in')
+#         # Initialize the handler.
+#         self.collqueue = CollisionHandlerQueue()
+#         self.collHandEvent = CollisionHandlerEvent()
+#         self.collHandEvent.addInPattern('%fn-into-%in')
 
-        self.collHandEvent.addOutPattern('%fn-out-%(tag)ih')
-######player
-        traverser.addCollider(self.player.atkNode, self.collHandEvent)
-        traverser.addCollider(self.player.parryNode, self.collHandEvent)
-        # traverser.addCollider(self.player.parryNode, self.collqueue)
+#         self.collHandEvent.addOutPattern('%fn-out-%(tag)ih')
+# ######player
+#         traverser.addCollider(self.player.atkNode, self.collHandEvent)
+#         traverser.addCollider(self.player.GatkNode, self.collHandEvent)
+#         traverser.addCollider(self.player.parryNode, self.collHandEvent)
+#         # traverser.addCollider(self.player.parryNode, self.collqueue)
 
         
 
-        traverser.traverse(render)
+#         traverser.traverse(render)
 
 
-#######enemies aTK HITBOXES
-        # if self.enemies:
-        for enemies in self.enemies:
-            traverser.addCollider(enemies.atkNode, self.collHandEvent)
+# #######enemies aTK HITBOXES
+#         # if self.enemies:
+#         for enemies in self.enemies:
+#             traverser.addCollider(enemies.atkNode, self.collHandEvent)
 
-        for turret in self.turrets:
-            traverser.addCollider(turret.HB, self.collHandEvent)
-            traverser.addCollider(turret.atkNodeL, self.collHandEvent)
-            traverser.addCollider(turret.atkNodeR, self.collHandEvent)
+#         for turret in self.turrets:
+#             traverser.addCollider(turret.HB, self.collHandEvent)
+#             traverser.addCollider(turret.atkNodeL, self.collHandEvent)
+#             traverser.addCollider(turret.atkNodeR, self.collHandEvent)
            
            
-            for bullet in turret.bullets:
-                traverser.addCollider(bullet.cNP, self.collqueue)
-                traverser.addCollider(bullet.cNP, self.collHandEvent)
+#             for bullet in turret.bullets:
+#                 traverser.addCollider(bullet.cNP, self.collqueue)
+#                 traverser.addCollider(bullet.cNP, self.collHandEvent)
                 
-                # self.accept(f'{hb.name}-into-arena', self.bullethitwall)
-                # traverser.addCollider(hb, queue)
-            # for key, value in turret.bullets.items():
-            #     traverser.addCollider(key.cNP, self.collHandEvent)
-        # list(self.bullets.keys())[2]
+#                 # self.accept(f'{hb.name}-into-arena', self.bullethitwall)
+#                 # traverser.addCollider(hb, queue)
+#             # for key, value in turret.bullets.items():
+#             #     traverser.addCollider(key.cNP, self.collHandEvent)
+#         # list(self.bullets.keys())[2]
 
-#Events for ur guy taking hits
-        # if self.playerTakingHit ==False:
-        # if self.enemies:
+# #Events for ur guy taking hits
+#         # if self.playerTakingHit ==False:
+#         # if self.enemies:
 
-        # for geom in lvl.arenaGeoms:
+#         # for geom in lvl.arenaGeoms:
 
-        # self.accept(f'parry-into-geom{n}', self.bullethitwall)
+#         # self.accept(f'parry-into-geom{n}', self.bullethitwall)
        
 
-####3##Player takes hits
-        for bodypart in self.player.HB: 
-            for enemy in self.enemies:
-                self.accept(f'{enemy.NP.name}attack-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name, enemy, 0.1]) #FIX should oinly takle one hit at a time
-                self.accept(f'{enemy.NP.name}attack-into-pdodgecheck', self.pdodge,  extraArgs=[True])
-                self.accept(f'{enemy.NP.name}attack-out-pdodgecheck', self.pdodge,  extraArgs=[False])
-                for bullet in turret.bullets:
-                    self.accept(f'{bullet.cNP.name}-into-{bodypart.name}', self.getShot, extraArgs=[bodypart.name, bullet, 0.1])
+# ####3##Player takes hits
+#         for bodypart in self.player.HB: 
+#             for enemy in self.enemies:
+#                 self.accept(f'{enemy.NP.name}attack-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name, enemy, 0.1]) #FIX should oinly takle one hit at a time
+#                 self.accept(f'{enemy.NP.name}attack-into-pdodgecheck', self.pdodge,  extraArgs=[True])
+#                 self.accept(f'{enemy.NP.name}attack-out-pdodgecheck', self.pdodge,  extraArgs=[False])
+#                 for bullet in turret.bullets:
+#                     self.accept(f'{bullet.cNP.name}-into-{bodypart.name}', self.getShot, extraArgs=[bodypart.name, bullet, 0.1])
 
-            for turret in self.turrets:
-                self.accept(f'{turret.NP.name}attackL-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name,turret, .15])
-                self.accept(f'{turret.NP.name}attackR-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name,turret,.15])
+#             for turret in self.turrets:
+#                 self.accept(f'{turret.NP.name}attackL-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name,turret, .15])
+#                 self.accept(f'{turret.NP.name}attackR-into-{bodypart.name}', self.takeHit, extraArgs=[bodypart.name,turret,.15])
                 
-                # self.accept(f'{turret.NP.name}attackL-into-parry', self.parryTurret, extraArgs=[turret, "R"])
-                # self.accept(f'{turret.NP.name}attackR-into-parry', self.parryTurret, extraArgs=[turret, "L"])
-########enemy takesa hits
-        for enemy in self.enemies:
-            # if enemy.isHit==True:
-            #         continue# disables multiple hits on single animation
-            # else:    
-            self.accept(f'{enemy.NP.name}attack-into-parry', self.deflectcontact, extraArgs=[enemy])
-            for bodypart in enemy.Hitbox: 
-                self.accept(f'attack-into-{bodypart.name}', self.hitEnemy, extraArgs=[enemy, bodypart.name]) #FIX should oinly takle one hit at a time
-                # self.accept(f'parry-into-{enemy.NP.name}attack', self.deflectcontact, extraArgs=[enemy])
+#                 # self.accept(f'{turret.NP.name}attackL-into-parry', self.parryTurret, extraArgs=[turret, "R"])
+#                 # self.accept(f'{turret.NP.name}attackR-into-parry', self.parryTurret, extraArgs=[turret, "L"])
+# ########enemy takesa hits
+#         for enemy in self.enemies:
+#             # if enemy.isHit==True:
+#             #         continue# disables multiple hits on single animation
+#             # else:    
+#             self.accept(f'{enemy.NP.name}attack-into-parry', self.deflectcontact, extraArgs=[enemy])
+#             for bodypart in enemy.Hitbox: 
+#                 # if self.player.isGrapplingGround==True:
+#                 #     pass
+#                 # if self.player.isGrapplingAir==True:
+#                 #     pass
+#                 # else:
+#                     self.accept(f'attack-into-{bodypart.name}', self.hitEnemy, extraArgs=[enemy, bodypart.name])
+#                     self.accept(f'Gattack-into-{bodypart.name}', self.grappleStrike, extraArgs=[enemy, bodypart.name]) #FIX should oinly takle one hit at a time
+#                 # self.accept(f'parry-into-{enemy.NP.name}attack', self.deflectcontact, extraArgs=[enemy])
 
-        for turret in self.turrets:
-            self.accept(f'attack-into-{turret.name}hb', self.hitTurret, extraArgs=[turret])
-            self.accept(f'parry-into-{turret.NP.name}attackL', self.parryTurret, extraArgs=[turret, "R"])
-            self.accept(f'parry-into-{turret.NP.name}attackL', self.parryTurret, extraArgs=[turret, "L"])
-            for bullet in turret.bullets:
-                # print('bullet hb name!', bullet.cNP.name)
-                for n in range(self.lvl.geomcount):
-                    self.accept(f'{bullet.cNP.name}-into-geom{n}', self.bullethitwall,extraArgs=[bullet])
-            # # for n in 
-            #     f'bullet{n}HB'
-            #     for x in lvl.arenaGeoms:
-            #         self.accept(f'attack-into-{turret.name}hb', self.hitTurret, extraArgs=[turret])
-                # child.ls()
+#         for turret in self.turrets:
+#             self.accept(f'attack-into-{turret.name}hb', self.hitTurret, extraArgs=[turret])
+#             self.accept(f'parry-into-{turret.NP.name}attackL', self.parryTurret, extraArgs=[turret, "R"])
+#             self.accept(f'parry-into-{turret.NP.name}attackL', self.parryTurret, extraArgs=[turret, "L"])
+#             for bullet in turret.bullets:
+#                 # print('bullet hb name!', bullet.cNP.name)
+#                 for n in range(self.lvl.geomcount):
+#                     self.accept(f'{bullet.cNP.name}-into-geom{n}', self.bullethitwall,extraArgs=[bullet])
+#             # # for n in 
+#             #     f'bullet{n}HB'
+#             #     for x in lvl.arenaGeoms:
+#             #         self.accept(f'attack-into-{turret.name}hb', self.hitTurret, extraArgs=[turret])
+#                 # child.ls()
                 
 
 
-        ##character speed
-        # self.speed = Vec3(0, 0, 0)
-        # _____HANDLER_____
- # shrink = LerpScaleInterval(self.worldNP, 3, .3)
-#####Collision events   
-# =   
-    def hitEnemy(self,enemy,part,entry):#actor
-        if enemy.isHit==True:
-            print(enemy.NP.name,'is already hit')
-            return
-        print(f'{enemy.NP.name} gets hit at ', part)
-        # print(entry)
-        # self.attached = False
-        # self.hitcontact = True
-        # self.atkNode.node().clearSolids()
-        enemy.isHit = True
-        self.hitsfx.play()
-        enemy.health-=.25
+#         ##character speed
+#         # self.speed = Vec3(0, 0, 0)
+#         # _____HANDLER_____
+#  # shrink = LerpScaleInterval(self.worldNP, 3, .3)
+# #####Collision events   
+# # =   
+#     def hitEnemy(self,enemy,part,entry):#actor
+#         if enemy.isHit==True:
+#             print(enemy.NP.name,'is already hit')
+#             return
+#         print(f'{enemy.NP.name} gets hit at ', part)
+#         # print(entry)
+#         # self.attached = False
+#         # self.hitcontact = True
+#         # self.atkNode.node().clearSolids()
+#         enemy.isHit = True
+#         self.hitsfx.play()
+#         enemy.health-=.25
     
-        # for node in enemy.Hitbox:
-        #     node.node().clearSolids()
-            # print('clear', node)
-        # enemy.solidsCleared = True    
+#         # for node in enemy.Hitbox:
+#         #     node.node().clearSolids()
+#             # print('clear', node)
+#         # enemy.solidsCleared = True    
 
-        def twitch(p):
-            #TODO add an anim instead of this
-            torso=enemy.model.controlJoint(None, "modelRoot", "torso")
-            torso.setP(p)
-        def end():
-            self.hitcontact=False
-       #stop = Func(enemy.model.stop())#enemy anim stop
-        a = Func(twitch, 30)
-        b = Func(twitch, 0)
-        p = Func(self.player.animseq.pause)#### player hitstopping
-        r = Func(self.player.animseq.resume)
-        e =Func(end)
+#         def twitch(p):
+#             #TODO add an anim instead of this
+#             torso=enemy.model.controlJoint(None, "modelRoot", "torso")
+#             torso.setP(p)
+#         def end():
+#             self.hitcontact=False
+#        #stop = Func(enemy.model.stop())#enemy anim stop
+#         a = Func(twitch, 30)
+#         b = Func(twitch, 0)
+#         p = Func(self.player.animseq.pause)#### player hitstopping
+#         r = Func(self.player.animseq.resume)
+#         e =Func(end)
         
-        hitseq = Sequence(a, p, Wait(.1),b, r,e).start()
-        if enemy.health<=0:
-            self.enemydeath(enemy)
-            self.player.gainPlotArmor(.05)
-        # shrink.start()
-    def parryTurret(self, turret, side, entry):
-        print(f'successfuluy parried {turret.name}. it is stagger now')
-        turret.staggered(side)
-    def hitTurret(self, turret, entry):
-        # print('hit',turret.name)
-        # turret.health -= .25
-        # if turret.health<=0:
-        #     # self.enemydeath(turret)
-        #     turret.dieSeq()
-        self.hitsfx.play()
+#         hitseq = Sequence(a, p, Wait(.1),b, r,e).start()
+#         if enemy.health<=0:
+#             self.enemydeath(enemy)
+#             self.player.gainPlotArmor(.05)
+#         # shrink.start()
+#     def grappleStrike(self, enemy, part, entry):
+#         print('grapple strake', enemy,'at', part)
 
-        if turret.isHit==True:
-            print(turret.NP.name,'is already hit')
-            return
-        print(f'{turret.NP.name} gets hit')
-        # print(entry)
-        # self.attached = False
-        # self.hitcontact = True
-        # self.atkNode.node().clearSolids()
-        turret.isHit = True
-        self.hitsfx.play()
-        turret.health-=.25
+#     def parryTurret(self, turret, side, entry):
+#         print(f'successfuluy parried {turret.name}. it is stagger now')
+#         turret.staggered(side)
+#     def hitTurret(self, turret, entry):
+#         # print('hit',turret.name)
+#         # turret.health -= .25
+#         # if turret.health<=0:
+#         #     # self.enemydeath(turret)
+#         #     turret.dieSeq()
+#         self.hitsfx.play()
+
+#         if turret.isHit==True:
+#             print(turret.NP.name,'is already hit')
+#             return
+#         print(f'{turret.NP.name} gets hit')
+#         # print(entry)
+#         # self.attached = False
+#         # self.hitcontact = True
+#         # self.atkNode.node().clearSolids()
+#         turret.isHit = True
+#         self.hitsfx.play()
+#         turret.health-=.25
     
-        # for node in enemy.Hitbox:
-        #     node.node().clearSolids()
-            # print('clear', node)
-        # enemy.solidsCleared = True    
+#         # for node in enemy.Hitbox:
+#         #     node.node().clearSolids()
+#             # print('clear', node)
+#         # enemy.solidsCleared = True    
 
-        def twitch(p):
-            #TODO add an anim instead of this
-            # torso=enemy.model.controlJoint(None, "modelRoot", "torso")
-            turret.model.setP(p)
-        def end():
-            self.hitcontact=False
-            turret.isHit = False
-       #stop = Func(enemy.model.stop())#enemy anim stop
-        a = Func(twitch, 30)
-        b = Func(twitch, 0)
-        p = Func(self.player.animseq.pause)#### player hitstopping
-        r = Func(self.player.animseq.resume)
-        e =Func(end)
+#         def twitch(p):
+#             #TODO add an anim instead of this
+#             # torso=enemy.model.controlJoint(None, "modelRoot", "torso")
+#             turret.model.setP(p)
+#         def end():
+#             self.hitcontact=False
+#             turret.isHit = False
+#        #stop = Func(enemy.model.stop())#enemy anim stop
+#         a = Func(twitch, 30)
+#         b = Func(twitch, 0)
+#         p = Func(self.player.animseq.pause)#### player hitstopping
+#         r = Func(self.player.animseq.resume)
+#         e =Func(end)
         
-        hitseq = Sequence(a, p, Wait(.1),b, r,e).start()
-        if turret.health<=0 and not turret.isDying:
-            turret.dieSeq()
-            self.player.gainPlotArmor(.1)
+#         hitseq = Sequence(a, p, Wait(.1),b, r,e).start()
+#         if turret.health<=0 and not turret.isDying:
+#             turret.dieSeq()
+#             self.player.gainPlotArmor(.1)
 
-    def bullethitwall(self,bullet, entry):
-        # print(bullet.name, 'hits wall')
-        # bullet.cNP.node().clearSolids()
-        # bullet.HBattached = False
-        bullet.hit()
-        # turret_name = str(entry).split('/')[2]
-        # turret = [t for t in self.turrets if t.name == turret_name][0]
-        # turret.reset_bullet(entry)
+#     def bullethitwall(self,bullet, entry):
+#         # print(bullet.name, 'hits wall')
+#         # bullet.cNP.node().clearSolids()
+#         # bullet.HBattached = False
+#         bullet.hit()
+#         # turret_name = str(entry).split('/')[2]
+#         # turret = [t for t in self.turrets if t.name == turret_name][0]
+#         # turret.reset_bullet(entry)
         
-        # print("i found turret", turret.name)
+#         # print("i found turret", turret.name)
 
 
-    def getShot(self,name,bullet,  amt, entry):
-        # if self.player.isStunned
-        bullet.hit()
-        # self.player.iframes()
+#     def getShot(self,name,bullet,  amt, entry):
+#         # if self.player.isStunned
+#         bullet.hit()
+#         # self.player.iframes()
        
-        def twitch(p):           
-            torso=self.player.charM.controlJoint(None, "modelRoot", "torso")
-            torso.setP(p)
-        def end():
-            # torso.removeNode()
-            self.player.charM.releaseJoint("modelRoot", "torso")
-        #     self.hitcontact=False
-       #stop = Func(enemy.model.stop())#enemy anim stop
-        a = Func(twitch, 30)
-        b = Func(twitch, 0)
-        # p = Func(self.player.animseq.pause)#### player hitstopping
-        # r = Func(self.player.animseq.resume)
-        e =Func(end)
+#         def twitch(p):           
+#             torso=self.player.charM.controlJoint(None, "modelRoot", "torso")
+#             torso.setP(p)
+#         def end():
+#             # torso.removeNode()
+#             self.player.charM.releaseJoint("modelRoot", "torso")
+#         #     self.hitcontact=False
+#        #stop = Func(enemy.model.stop())#enemy anim stop
+#         a = Func(twitch, 30)
+#         b = Func(twitch, 0)
+#         # p = Func(self.player.animseq.pause)#### player hitstopping
+#         # r = Func(self.player.animseq.resume)
+#         e =Func(end)
         
-        hitseq = Sequence(a,  Wait(.1),b,e).start()
-        print('plaayrr gets shot. Oh no!', name)
+#         hitseq = Sequence(a,  Wait(.1),b,e).start()
+#         print('plaayrr gets shot. Oh no!', name)
 
-    def takeHit(self, name, enemy,amt, entry):
-        """amt is the amount opf damage, varies from enemy + attack"""
-        if enemy!=None:
-            if enemy.hasHit ==True:
-                print('im alrteady hit gd')
-                return
-            self.player.takeHit()
-            # enemy.atkNode.node().clearSolids()
-            enemy.hasHit=True 
-            print(  enemy.name, 'hits players', name)
-        # self.player.takeHit()
-        netDmg = amt - self.player.plotArmour
+#     def takeHit(self, name, enemy,amt, entry):
+#         """amt is the amount opf damage, varies from enemy + attack"""
+#         if enemy!=None:
+#             if enemy.hasHit ==True:
+#                 print('im alrteady hit gd')
+#                 return
+#             self.player.takeHit()
+#             # enemy.atkNode.node().clearSolids()
+#             enemy.hasHit=True 
+#             print(  enemy.name, 'hits players', name)
+#         # self.player.takeHit()
+#         netDmg = amt - self.player.plotArmour
 
-        if self.player.plotArmour > 0:
-            self.player.plotArmour -= amt
-            if amt> self.player.plotArmour:
-                self.player.health -= netDmg
-        else:
-            self.player.health -= amt        
-        print(f'player take {amt} damage', 'hp-', netDmg)
+#         if self.player.plotArmour > 0:
+#             self.player.plotArmour -= amt
+#             if amt> self.player.plotArmour:
+#                 self.player.health -= netDmg
+#         else:
+#             self.player.health -= amt        
+#         print(f'player take {amt} damage', 'hp-', netDmg)
             
-        # print(entry)
-        # self.dummy2.atkNode.node().clearSolids()
+#         # print(entry)
+#         # self.dummy2.atkNode.node().clearSolids()
         
-        # if self.player.health<=0:
-        #     self.doExit()
-        #add hitstopping,for enemy, sfx, etc
-        ####Nered to add poise check then see whether or not character gets stunned
+#         # if self.player.health<=0:
+#         #     self.doExit()
+#         #add hitstopping,for enemy, sfx, etc
+#         ####Nered to add poise check then see whether or not character gets stunned
        
 
-    def deflectcontact(self,enemy, entry):
-        print(f'player defelects {enemy.name}', 'enemyposture:',enemy.posture)
-        if enemy.hasHit ==True:
-                print('im alrteady hit parrued')
-                return
-        enemy.hasHit = True
-        #pause anims opn enemy/p[layer, play recoil anims]
-        #deplete posture from enemy, if posture -== 0 enemy enters stun
-        self.player.parryNode.node().clearSolids()
-        enemy.atkNode.node().clearSolids()
-        # self.player.iframes
-        self.deflectsfx.play()
+#     def deflectcontact(self,enemy, entry):
+#         print(f'player defelects {enemy.name}', 'enemyposture:',enemy.posture)
+#         if enemy.hasHit ==True:
+#                 print('im alrteady hit parrued')
+#                 return
+#         enemy.hasHit = True
+#         #pause anims opn enemy/p[layer, play recoil anims]
+#         #deplete posture from enemy, if posture -== 0 enemy enters stun
+#         self.player.parryNode.node().clearSolids()
+#         enemy.atkNode.node().clearSolids()
+#         # self.player.iframes
+#         self.deflectsfx.play()
 
-        self.deflected('recoil1',enemy)
+#         self.deflected('recoil1',enemy)
 
-    def pdodge(self,x, entry):
-        self.character.perfectDodge = x
-        print('pdodge',self.character.perfectDodge)
+#     def pdodge(self,x, entry):
+#         self.character.perfectDodge = x
+#         print('pdodge',self.character.perfectDodge)
 #####camera
     def resetCam(self):
         # base.camera.removeNode()
@@ -580,7 +591,7 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
                 self.lerpCam.pause()
             self.lerpCam = None
     def actionX(self):
-        self.finisherCheck()
+        # self.finisherCheck()
         # print('closest enemy: ', self.closest)
         # if self.player.isGrappling == True:
         #     self.player.endGrapple()
@@ -659,12 +670,16 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
         self.rt = True
         # print('action rt', value)
     def actionLT(self, value):
-        print('action lt', value)
+        print('current grapple:', self.player.currentGrapple,'last:', self.player.lastGrapple )
         if self.player.currentGrapple!=None:
-            print('already grapple', self.player.currentGrapple)
+            # print('already grapple', self.player.currentGrapple)
             return
         self.lt = True
-        print('gp chjec', self.GPcheck())
+    
+        
+        if self.GPcheck()[0] ==0 :
+            print('no points')
+            return
         self.player.currentGrapple = self.GPcheck()[0]
         # print('curr g', self.player.currentGrapple)
         
@@ -820,30 +835,81 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
     def wallgrabInput(self, dt):
         if self.gamepad:
             self.joystickwatch()
-    def GPcheck(self):
+    def GPcheck(self, Ylimit = -10, Zlimit = 50, Dislimit = 100):
         """find closest grappleable point- give closest GP, is it obstructed, is it in  view of camera? show indicators for active"""
-        # find closest
-        playerpos = self.charM.getPos(render)
-        gps = []
-        for i in self.lvl.grapplePoints:
-            dis = (playerpos-i.getPos(render)).length()
-            gps.append(dis)
-        closest = min(gps)
-
-        if closest > 100:
-            print('too far')
-        # if self.currentGrapple==None:
-        for x in self.lvl.grapplePoints:
-            dis = (playerpos-x.getPos(render)).length()
-            if closest == dis:
-                gp = x
-                # self.player.currentGrapple = x
         #check for air/ground
         if self.character.movementState in self.character.airstates:
             ground = False 
         else:
             ground = True
+            DisLimit = 200
+            # print('z diff', )
+        # find closest
+        playerpos = self.charM.getPos(render)
+        gps = []
+        if self.player.lastGrapple!=None:
+            filteredPoints = filter(lambda x: x != self.player.lastGrapple, self.lvl.grapplePoints)
+        else:
+            filteredPoints = self.lvl.grapplePoints
+        # for i in self.lvl.grapplePoints:
+        for i in filteredPoints:
+            #point is invalid if it is 1) behind cam, or z dis > 20
+            relY = i.getY(base.camera)
+            relZ = i.getZ(base.camera)
+
+            if relY<Ylimit:
+                continue
+            if abs(relZ)>Zlimit:
+                continue
+            if ground == True and relZ > 10: #should be able to ground grapple p[oints too high]
+                continue
+            dis = (playerpos-i.getPos(render)).length()
+            if dis > Dislimit:
+                continue
+
+            gps.append(dis)
+        if not gps:
+            print('no points')
+            return [0,False]
+        closest = min(gps)
+
+######3check if closest matches the previous point
+        
+
+####matche closest to grapple point
+        for x in self.lvl.grapplePoints:
+         
+            dis = (playerpos-x.getPos(render)).length()
+            if closest == dis:
+                gp = x
+
+                # if gp == self.player.currentGrapple:
+                #     closest = min
+                # self.player.currentGrapple = x
+                
+        if not gp:
+            print('no points except the opne u just grappled to')
+            return [0,False]
+
+        #check for obstructed path
+        def sweep():
+            mask = BitMask32.bit(2)
+            fr = TransformState.makePos(self.charM.getPos(render))
+            to = TransformState.makePos(gp.getPos(render))
+            shape = BulletSphereShape(0.5)
+            penetration = 0.0
+            result = self.world.sweepTestClosest(shape, fr, to, mask)
+            if result.hasHit():
+                return True
+        if sweep() == True:
+            print('path obstructed')
+            return [0,False]
+
+
+
         return [gp, ground]   
+
+
             # else:
             #     print('no grapplepoints')
                 # gp=x
@@ -1503,21 +1569,21 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
                             posture= 2,
                             hbshader=self.shader,spawnpoint = self.lvl.enemyspawnpoints[0],
                             # initState='charging',
-                            initState='charging',
+                            initState='stunned',
                             type = 'Basic',
                             name = 'dummy' )
         self.dummy2 = Enemy(self.world, self.worldNP,enemy2, startpos = self.lvl.inactiveenemypos[1],
                             posture=2,
                             hbshader=self.shader,
                             spawnpoint=self.lvl.enemyspawnpoints[1],
-                            initState='charging',
+                            initState='stunned',
                             type = 'Basic',
                             name = 'dummy2'  ) 
         self.dummy3 = Enemy(self.world, self.worldNP,enemy3, startpos = self.lvl.inactiveenemypos[2],
                             posture=2,
                             hbshader=self.shader,
                             spawnpoint=self.lvl.enemyspawnpoints[2],
-                            initState='charging',
+                            initState='stunned',
                             type = 'Basic',
                             name = 'dummy3'  ) 
                             # parrypos=loader.loadModel('../models/enemies/enemyparrypos.glb'), )

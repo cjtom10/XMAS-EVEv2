@@ -43,6 +43,9 @@ class Player(Anims,Actions, Fx):
         self.leftValue = self.rightValue = 0
         self.dead = False
 
+        self.enemyLaunchTarget = self.character.movementParent.attachNewNode('launchtarg')#enemies go to this point when you launch them
+        self.enemyLaunchTarget.setPos(0,30,15)
+
 
         #init hitboxes
         # self.charhitbox(self.charM, self.character.HB, True,'player')
@@ -232,9 +235,12 @@ class Player(Anims,Actions, Fx):
         #     return
         if self.isGrapplingAir==True:
             if self.isPerched==True:
+                # self.animPerch()
                 self.perched(dt)
                 
             return
+        if self.character.movementState == 'ground' and self.lastGrapple!=None:
+            self.lastGrapple = None
         if self.isStunned == True:
             # print('u AARE STUNNDE')
             return

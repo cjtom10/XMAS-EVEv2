@@ -45,6 +45,7 @@ class Turret():
         # self.healthbar.reparentTo(self.NP)
         # self.healthbar.setZ(5)
         
+        
         self.isSpawning = False
         self.isDying = False
         self.isHit = False
@@ -240,12 +241,10 @@ class Turret():
 
             inactive_bullets = []
             active_bullets = []
-            # print('dhdh', round(et*100) % 60)
-            # if round((et%.3) * 100) == 1:
-            if round(et*100) % 60 == 0:
-                # print('et', et)
-                # print('shooty buyllet', round((et%.6) * 100))
-                self.fire()
+    
+            # if round(et*100) % 60 == 0:
+          
+            #     self.fire()
 
             # if self.health <1:
         
@@ -321,8 +320,7 @@ class Bullet():
             self.attachHB()
 
     def processShooting(self, t):
-        # forward = render.getRelativeVector( self.NP, Vec3(0,10,0))
-
+        # forward = v
         self.NP.setY(self.NP, t * self.speed)
         # self.NP.setY(t * forward.y)
         # print(self.NP.getPos(render), self.parentNode.getPos(render))
@@ -397,6 +395,10 @@ class Enemy():
 
         self.finishMe = False
 
+        self.isPaused = False
+
+        self.grappleStruck = False
+        self.pausePos = (0,0,0)
         # self.pdodgecheck = NodePath(BulletRigidBodynode(f'{self.name}pdodge'))
         # self.pdodgecheck.node().setKinematic(True)
         # self.pdodgecheck.node().addShape)
@@ -434,6 +436,7 @@ class Enemy():
         self.HB.show()
     # def resetPosture(self):
 
+
     def updateBasic(self):#, task):
         # print('posture', self.posture,'attackiing?', self.isAttacking)
         # if self.active == False:
@@ -441,6 +444,13 @@ class Enemy():
         # print('my pisture', self.name, self.posture, 'hashiu', self.hasHit)
         #finisher check
         # self.healthbar.setPos(self.NP.getPos())
+        if self.isPaused==True:
+            self.NP.setPos(self.pausePos)
+            # self.controller.setLinearMovement(0, False)
+            return
+        if self.grappleStruck == True and self.controller.isOnGround():
+            self.land()
+        
         if self.posture<=0: #and self.inRange == True:
             # self.finishMe = True
             self.currentBehavior = 'stunned'
@@ -498,6 +508,17 @@ class Enemy():
         #     self.resetPosture()
         self.controller.setLinearMovement(self.speed, False)
         return #task.cont
+    def pause(self, pos):
+        """pauses enemy in place , sets it at pos, use for when its getting grappled
+        """
+        self.isPaused=True
+        self.pausePos=pos
+
+    def land(self):
+        """landing after gettingh launched"""
+        self.speed = 0
+        #play anim to completion then get up and randomize behaviopr
+        self.grappleStruck = False
     def randomizebehavior(self):#, task):
         """2 behaivors, when not in attack range and when in attacl range"""
         # print('randopmzia', self.d2p)
@@ -551,6 +572,7 @@ class Enemy():
             return
         else:
             self.doAttack(anim=self.atx[self.atkorder])
+    
 
     def doAttack(self,anim='slash', limit = 2):#, limit=2):#, task):
         """limit is the max a mount of combos"""
@@ -634,7 +656,8 @@ class Enemy():
 
         # if dis<3 and self.isAttacking!=True:
         #     self.attack()
-
+    def processGrappleStruck(self):
+        """make enemy grappleable, """ 
     def processCharge(self):
         # print(self.name, 'chargingup hhnnnnnngh','hp:',self.health,'charge amt', self.chargeAMT)
         if  (self.anim!='chargeup'):
@@ -705,14 +728,13 @@ class Enemy():
         # chargeseq = Sequence() 
         pass
     def isStunned(self):
-        print(self.name, 'is stuned!')
+        # print(self.name, 'is stuned!')
         if self.anim!='staggered':
             self.model.play('staggered')
-        # print('stagerframe',self.frame)
-        if self.frame!=None:
-            if self.frame >=40:
-                self.randomizebehavior()
+   
+        # if self.frame!=None:
+        #     if self.frame >=40:
+        #         self.randomizebehavior()
         #need to exit out after some tim e
-        # if self.d2p<5:
-        #     self.finishMe = True
+ 
         return
