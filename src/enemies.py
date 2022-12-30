@@ -398,7 +398,10 @@ class Enemy():
         self.isPaused = False
 
         self.grappleStruck = False
+        self.launchSeq = None
         self.pausePos = (0,0,0)
+        self.isLaunched = False # for preventing launching when u grapple to a lauuncghed enemy
+
         # self.pdodgecheck = NodePath(BulletRigidBodynode(f'{self.name}pdodge'))
         # self.pdodgecheck.node().setKinematic(True)
         # self.pdodgecheck.node().addShape)
@@ -446,9 +449,11 @@ class Enemy():
         # self.healthbar.setPos(self.NP.getPos())
         if self.isPaused==True:
             self.NP.setPos(self.pausePos)
+            print(self.name, 'ispaused')
             # self.controller.setLinearMovement(0, False)
             return
         if self.grappleStruck == True and self.controller.isOnGround():
+            # self.launchSeq = None
             self.land()
         
         if self.posture<=0: #and self.inRange == True:
@@ -513,12 +518,14 @@ class Enemy():
         """
         self.isPaused=True
         self.pausePos=pos
+        print('pause enemy')
 
     def land(self):
         """landing after gettingh launched"""
         self.speed = 0
         #play anim to completion then get up and randomize behaviopr
         self.grappleStruck = False
+        self.isLaunched = False 
     def randomizebehavior(self):#, task):
         """2 behaivors, when not in attack range and when in attacl range"""
         # print('randopmzia', self.d2p)

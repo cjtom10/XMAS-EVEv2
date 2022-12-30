@@ -198,10 +198,13 @@ class Events:
             if enemy.isHit==True:
                 print(enemy.NP.name,'is already hit')
                 return
+            if enemy.isLaunched ==True:
+                return
+            enemy.isLaunched =True
             point = self.player.enemyLaunchTarget.getPos(render)
             eFallDir = render.getRelativeVector( self.charM, Vec3(0,10,0))
             enemy.pausePos = point
-            
+            self.lvl.grapplePoints.append(enemy.NP)
             def pause():
                 if self.player.isGrapplingGround == True:
                     self.player.character.grappleEnemyContact = True
@@ -215,6 +218,7 @@ class Events:
             def fallspeed():
                 enemy.speed = eFallDir
                 enemy.grappleStruck =True
+                self.lvl.grapplePoints.remove(enemy.NP)
             def ePause(x):
                 enemy.isPaused = x
 
@@ -227,8 +231,9 @@ class Events:
             enemy.isHit = True
             
             launch = LerpPosInterval(enemy.NP, .5, point)
-            
-            s = Sequence(hit,Wait(.1),Parallel(launch,cont),pauseEnemy,Wait(.5), resumeEnemy, fall).start()
+            if enemy.launchSeq ==None:
+                enemy.launchSeq = Sequence(hit,Wait(.1),Parallel(launch,cont),Wait(.5), resumeEnemy, fall)
+                enemy.launchSeq.start()
             # enemy.controller.setMaxJumpHeight(10)
             # enemy.controller.setJumpSpeed(10)
             # enemy.controller.doJump()
@@ -526,189 +531,7 @@ class Events:
                 self.lblAction.destroy()
                 self.lblAction = None
                 # self.graphic.destroy()
-#####3TASKS here
-        # # def closestEnemy(self):
-        # #     """find closestenemy for lock on"""
-        # #     # print('dist2enemy',self.p2e)
-        # #     # print(self.enemiesPos)
-        # #     playerpos = self.charM.getPos(render)
-        # #     ####enemies move to these points
-        # #     target1 = (playerpos.x, playerpos.y +2, playerpos.z)
-
-        # #     self.dummy2.moveTarget = target1
-        # #     self.dummy2.lookTarget = playerpos
-        # #     # if self.character.movementState!='dodging':
-        # #     #     self.dummy2.tracktarget()
-        # #     # self.dummy.lookTarget = playerpos
-        # #     def updateEnemypos():
-                
-        # #         for name in self.activeEnemiesPos:
-        # #             self.activeEnemiesPos.update({name:name.getPos(render)})
-        # #         if self.closest!=None:
-        # #             pos = self.activeEnemiesPos.get(self.closest)
-        # #             self.p2e = abs((playerpos-pos).length())
-        # #             self.midpoint = Point3((playerpos.x+pos.x)/2,(playerpos.y+pos.y)/2,(playerpos.z+pos.z)/2)
-                    
-        # #     updateEnemypos()
-
-        # #     if self.lockedOn ==True:
-                
-        # #         if self.closest == None:
-                    
-        # #             v = self.activeEnemiesPos.values()
-                    
-        # #             closeval= min(v, key=lambda pt: (playerpos - pt).length())
-        # #             for key, value in self.activeEnemiesPos.items():
-        # #                     if closeval==value:
-        # #                         self.closest = key
-                                
-        # #             # self.p2e=(playerpos - closeval).length()
-
-        # #         a = self.charM.getX(render) - self.closest.getX(render)
-        # #         b = self.charM.getY(render) - self.closest.getY(render)
-
-        # #         h = math.atan2(a,-b )
-        # #         angle = math.degrees(h) 
-
-        # #         # self.closest = closest
-        # #         self.charM.setH(render, angle)
-        # #         self.camtarg.setH(render, angle)
-        # #         # base.camera.setH(angle)
-
-        # #         self.crosshair.reparentTo(self.closest)
-        # #         self.crosshair.setPos(self.charM.getPos())
-        # #     if self.lockedOn ==False:
-        # #         self.crosshair.detachNode() 
-        # #         self.closest = None   
-        # #     return
-
-        # def inputtimer(self,task):## TOIDO=- air timer should have smaller window, use  time between inputs
-
-        #     """Timer that starts betwen attacks to determine combo/animation. attacking during active frames
-        #     adds hitbox etc, buffer is rest of the frmaes, and the pause frame indicates when  delay atacks can be done"""
-        #     # print('frame:',self.charM.getCurrentFrame())
-        #     #to do: delay time based on frame#
-        #     # print(task.time)
-        #     # self.itimer = True
-        #     if self.character.isAttacking==False:#remove hb
-        #         self.attached = False
-        #         self.atkNode.node().clearSolids()
-        #         self.parryNode.node().clearSolids()
-
-        #     # if self.atkframe <13:
-        #     ##correct method bAsed on fdrames
-        #     if self.character.isAttacking ==True or self.buffer ==True and self.pauseframe==False:                  
-        #         return task.cont
-        #     # if self.buffer.getCurrentFrame() ==21:#pause
-        #     if self.pauseframe == True and self.buffer ==True and self.character.isAttacking ==False:    
-        #         # print('pauseframe')
-        #         # if self.leftjoystick ==True:
-        #         #     print('end attack by waY OF WALK')
-        #         #     self.finish()
-        #         #     return task.done
-               
-        #         if self.pause ==False and len(self.atx)!=0:
-        #             self.action(None, (0,0,0), pause=True)
-        #             self.atx.append('-')
-        #             self.pause =True 
-        #         # self.inputtime = task.time
-        #         return task.cont
-
-        #     if self.buffer == False:
-            
-        #         self.finish(blendOut=True)
-        #         return task.done 
-
-        #     # if self.atx!= None:
-        #     #     if len(self.atx) >=6:
-        #     #         print('combo limit')
-        #     #         self.finish()
-
-        # # def finish(self,blendOut = False):
-        # #         """clear things up at the end of attack sequence or use to cancel out of attack sequence"""
-        # #         if self.animseq!=None:
-        # #             self.animseq.pause()
-        # #         if self.atx!=None:
-        # #             self.atx.clear()
-        # #         self.character.movementState = "endaction"
-        # #         self.character.jumpdir =  Vec3(0,0,0)
-        # #         self.character.isAttacking=False
-        # #         self.character.isParrying=False
-        # #         self.hitcontact = False
-        # #         self.atkNode.node().clearSolids()
-        # #         # self.world.removeGhost(self.rightfootHB.node())
-        # #         # self.slash1trail.detachNode()
-                 
-        # #         self.actionUp()   
-        # #         self.pause = False
-        # #         # if keeptimer==False:
-        # #         self.attached = False
-                
-        # #         self.animseq = None
-        # #         self.itimer = None
-
-        # #         #letr enemies get hit again
-        # #         for enemy in self.enemies:
-        # #             enemy.isHit = False
-        # #         #     if enemy.solidsCleared == True:
-        # #         #         self.charhitbox(enemy.model, enemy.Hitbox, enemy.name)
-
-        # #         ##blend back to idle/walking on ground
-        # #         #TODO --- need to blend from end frmae to idle/walk
-        # #         # print('fionish', self.character.movementState)
-        # #         # print('isonground',self.character.isOnGround())
-
-        # #         #Blend out to idle here TESTING PURPOSES----------=-
-        # #         if blendOut==True:
-        # #             # print('blendout')
-        # #             # if self.character.isOnGround():
-        # #             self.blendoutAtk = [self.currentAtk[0], self.currentAtk[1]]#blendout atk to change based on atack anim
-
-        # def parrytask(self, task):
-        #     # self.character.movementState ="attacking"
-        #     if self.anim =='parry':
-        #         if self.attached == False:
-        #             self.hb(parent=self.forearm, node = self.parryNode, shape=self.atkhb)
-        #         return task.cont
-        #     else:
-        #         self.character.movementState = "endaction"
-        #         # print('enmdparry')
-        #         self.parryNode.node().clearSolids()
-        #         self.attached = False
-        #         self.character.isParrying = False
-        #         return task.done
-        # def doDeflect(self, state='ground'):
-        #     print('deflect order:', self.deflectOrder)
-        #     self.deflectOrder+=1
-            
-        #     if self.character.movementState == "attacking":
-        #         if self.character.isAttacking == True:
-        #             print('cant deflect-attacking')
-        #             return
-        #         if self.character.isParrying == True:
-        #             print('cant deflect-deflecting')
-        #             return    
-        #         else:
-        #             self.finish()
-        #     if state=='air':
-        #         print('air deflect')
-        #         return
-        #     if self.attached == False:
-        #         self.hb(parent=self.charM, node = self.parryNode, shape=CollisionSphere(0.5, 0.7, 2.3, 1))#, pos = (0,1,2))
-        #     if self.animseq is not None:#end attack anim sequence
-        #         if self.animseq.isPlaying():
-        #                 self.animseq.pause()
-        #     if self.itimer == True: 
-        #         self.itimer == False
-        #         taskMgr.remove('itimer')
-        #         self.finish()
-        #     if self.character.movementState!= "attacking":
-        #         self.character.movementState = "attacking"            
-            
-        #     if self.lockedOn ==False:
-        #         self.charM.setH(self.angle)
-        
-        #     self.animDeflect()
+#
         def deflected(self, anim, enemy): #control enemie's recoil anim here too
             """event for when u succesfully deflect enemy- enemy loses one posture point and player recoils"""
             print('deflect!')

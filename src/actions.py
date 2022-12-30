@@ -703,7 +703,7 @@ class Actions:
             # print('mid grapple pos', self.character.movementParent.getPos(render))
             self.lastGrapple = None
 
-            self.hb(self.charM, self.GatkNode, CollisionCapsule(0,0,0,0,0,3,1.2), visible = True)
+            # self.hb(self.charM, self.GatkNode, CollisionCapsule(0,0,0,0,0,3,1.2), visible = True)
             
             a = self.charM.getX(render) - point.getX(render)
             b = self.charM.getY(render) - point.getY(render)
@@ -729,7 +729,7 @@ class Actions:
                      # need to do this once then loop the anim
                 # self.processGroundGrapple(point)
                 return
-            #TODO Need to disable grappling twice in one go
+        
 
             self.isGrapplingAir = True
             self.grapplePoint = point# for animation
@@ -745,6 +745,7 @@ class Actions:
             # print('grapples')
             
             la = Func(lookat)
+            atachHB = Func(self.hb, self.charM, self.GatkNode, CollisionCapsule(0,0,0,0,0,3,1.2), visible = True)
             anim1 = self.charM.actorInterval('grappleAir',loop = 0, startFrame=0, endFrame = 12)
             # anim2 = self.charM.actorInterval('grappleAir',loop = 0, startFrame=16, endFrame = 26)
             grappling = self.charM.actorInterval('grappleAir',loop = 1, startFrame=12, endFrame = 40)           
@@ -754,7 +755,7 @@ class Actions:
             # fin = Func(self.endGrapple)
             fin = Func(enterPerched)
             
-            self.grappleSeq = Sequence(anim1,Parallel(la, nod), fin)
+            self.grappleSeq = Sequence(anim1,Parallel(la,atachHB, nod), fin)
             self.grappleSeq.start()
 
         def processGroundGrapple(self, point):# point, dt):

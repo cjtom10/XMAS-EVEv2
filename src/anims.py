@@ -756,6 +756,7 @@ class Anims:
                     # se = Sequence(start, Wait(1), end).start()
         b4 = Func(pre)
         start=Func(stateGrapple)
+        attachHB = Func(self.hb, self.charM, self.GatkNode, CollisionCapsule(0,0,0,0,0,3,1.2), visible = True)
         # mid=Func(stateEnd)
         end=Func(self.finish)
 
@@ -769,7 +770,7 @@ class Anims:
 
                     # se = Sequence(start, Wait(1), end).start()
 
-        self.animseq = Sequence(Parallel(b4,anim1),start, grappling, name='startGgrapple')
+        self.animseq = Sequence(Parallel(b4,anim1),Parallel(start,attachHB), grappling, name='startGgrapple')
         self.animseq.start() 
         
 

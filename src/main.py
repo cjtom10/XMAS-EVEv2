@@ -905,11 +905,29 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
             print('path obstructed')
             return [0,False]
 
+        print('the grapple point:', gp)
 
+        if gp not in [item.NP for item in self.enemies]:
+            return [gp, ground]  
+        print('enemy being grappled')
+        # self.player.GatkNode.node().clearSolids()# maker sure u dont launch anyone twice
+        enemymatch = self.findEnemy(gp)
+     
+        if enemymatch.launchSeq!=None:
+            if enemymatch.launchSeq.isPlaying():
+                enemymatch.launchSeq.pause()
+                enemymatch.launchSeq = None
+                print('pausing enemy')
+        enemymatch.pause(pos = gp.getPos(render))
+            
+          
 
         return [gp, ground]   
+    def findEnemy(self, gp):
+        """match gp.NP to enemy in self.enemies"""
+        enemy = next(item for item in self.enemies if item.NP == gp) 
 
-
+        return enemy
             # else:
             #     print('no grapplepoints')
                 # gp=x
@@ -1301,6 +1319,8 @@ class Game(DirectObject, KeyboardInput, Anims, GamepadInput, Level, Events):
                 # if enemy.active ==True:   
                 if enemy.type == 'Basic':
                     enemy.updateBasic()
+
+    
         
         et = task.time
         turretDT = globalClock.dt
